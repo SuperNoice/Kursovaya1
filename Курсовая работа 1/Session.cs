@@ -123,7 +123,17 @@ namespace Курсовая_работа_1
             return (Message)formatter.Deserialize(messageStream);
         }
 
-        public void Open()
+        public Message[] Send_Recieve(Message[] msgArray)
+        {
+            List<Message> messages = new List<Message>();
+
+            foreach (Message msg in msgArray)
+                messages.Add(Send_Recieve(msg));
+            
+            return messages.ToArray();
+        }
+
+            public void Open()
         {
             if (IsOpen)
                 throw new Exception("Session already open");

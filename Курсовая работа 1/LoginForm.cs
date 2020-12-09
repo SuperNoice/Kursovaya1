@@ -54,9 +54,9 @@ namespace Курсовая_работа_1
             //        throw new Exception($"Неизвестный ответ: \"{answer.Text.ToLower()}\"");
             //}
             //loginErrorLabel.Visible = false;
-            
+
             IsLogin = true;
-            UserInfo.UserRole = Role.Student;
+            UserInfo.UserRole = Role.Admin;
             
             if (IsLogin)
                 this.Close();

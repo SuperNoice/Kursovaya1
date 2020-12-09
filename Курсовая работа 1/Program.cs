@@ -11,7 +11,7 @@ namespace Курсовая_работа_1
     static class Program
     {
         static bool DebugMode = true;
-
+        
         [STAThread]
         static void Main()
         {
@@ -25,7 +25,7 @@ namespace Курсовая_работа_1
             }
 
             Session session = null;
-            //Session session = new Session(IPAddress.Parse(""), 18888);
+            //Session session = new Session(IPAddress.Parse("127.0.0.1"), 14777);
             //session.Open();
 
             LoginForm login = new LoginForm(session);
