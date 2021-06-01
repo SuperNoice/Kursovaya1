@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Threading;
+using ClassLib;
 
 namespace Курсовая_работа_1
 {
@@ -23,25 +24,7 @@ namespace Курсовая_работа_1
         public static Role UserRole = Role.None;
     }
 
-    public class Message
-    {
-        public string Text { get; private set; }
-        public DataTable Table { get; private set; }
-
-        public Message(string msg)
-        {
-            Text = msg;
-            Table = new DataTable();
-        }
-
-        public Message(string msg, DataTable table)
-        {
-            Text = msg;
-            if (!table.IsInitialized)
-                throw new Exception("Table not Initialized");
-            Table = table;
-        }
-    }
+    
 
     public class Session
     {
@@ -73,7 +56,7 @@ namespace Курсовая_работа_1
             _serverEndPoint = new IPEndPoint(serverIp, serverPort);
         }
 
-        public Message Send_Recieve(Message msg)
+        public ClassLib.Message Send_Recieve(ClassLib.Message msg)
         {
             if (!IsOpen)
                 throw new Exception("Соединение не установлено. Сначала используйте Open()");
@@ -82,6 +65,9 @@ namespace Курсовая_работа_1
             MemoryStream messageStream = new MemoryStream();
 
             formatter.Serialize(messageStream, msg);
+
+            messageStream.Position = 0;
+
             try
             {
                 local_socket.Send(messageStream.ToArray());
@@ -100,10 +86,10 @@ namespace Курсовая_работа_1
 
             byte[] buffer = new byte[2048];
             int waitingTime = 0;
-            int sleepTime = 100;
+            int sleepTime = 5;
             while (local_socket.Available == 0)
             {
-                if (waitingTime > 5000)
+                if (waitingTime > 20000)
                 {
                     IsOpen = false;
                     Log.Print($"Потеряно соединение с сервером {ServerAddress}");
@@ -119,21 +105,24 @@ namespace Курсовая_работа_1
                 int receiveLength = local_socket.Receive(buffer);
                 messageStream.Write(buffer, 0, receiveLength);
             } while (local_socket.Available > 0);
-
-            return (Message)formatter.Deserialize(messageStream);
+            messageStream.Position = 0;
+            return (ClassLib.Message)formatter.Deserialize(messageStream);
         }
 
-        public Message[] Send_Recieve(Message[] msgArray)
+        public ClassLib.Message[] Send_Recieve(ClassLib.Message[] msgArray)
         {
-            List<Message> messages = new List<Message>();
+            List<ClassLib.Message> messages = new List<ClassLib.Message>();
 
-            foreach (Message msg in msgArray)
+            foreach (ClassLib.Message msg in msgArray)
+            {
                 messages.Add(Send_Recieve(msg));
-            
+                if (messages[messages.Count - 1].Text == "FAIL")
+                    return messages.ToArray();
+            }
             return messages.ToArray();
         }
 
-            public void Open()
+        public void Open()
         {
             if (IsOpen)
                 throw new Exception("Session already open");

@@ -43,7 +43,7 @@
             this.MenuPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.SaveChangesButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.updButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).BeginInit();
             this.SuspendLayout();
@@ -122,11 +122,10 @@
             this.dataGridViewMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridViewMain.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.dataGridViewMain.BackgroundColor = System.Drawing.SystemColors.ControlLight;
             this.dataGridViewMain.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewMain.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column1});
-            this.dataGridViewMain.Location = new System.Drawing.Point(198, 63);
+            this.dataGridViewMain.Location = new System.Drawing.Point(199, 63);
             this.dataGridViewMain.Name = "dataGridViewMain";
             this.dataGridViewMain.RowHeadersVisible = false;
             this.dataGridViewMain.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
@@ -176,6 +175,7 @@
             // SaveChangesButton
             // 
             this.SaveChangesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SaveChangesButton.Enabled = false;
             this.SaveChangesButton.Location = new System.Drawing.Point(1066, 29);
             this.SaveChangesButton.Name = "SaveChangesButton";
             this.SaveChangesButton.Size = new System.Drawing.Size(130, 30);
@@ -194,16 +194,24 @@
             this.label1.TabIndex = 15;
             this.label1.Text = "Меню";
             // 
-            // Column1
+            // updButton
             // 
-            this.Column1.HeaderText = "Column1";
-            this.Column1.Name = "Column1";
+            this.updButton.Enabled = false;
+            this.updButton.Location = new System.Drawing.Point(988, 29);
+            this.updButton.Margin = new System.Windows.Forms.Padding(0);
+            this.updButton.Name = "updButton";
+            this.updButton.Size = new System.Drawing.Size(75, 30);
+            this.updButton.TabIndex = 16;
+            this.updButton.Text = "Обновить";
+            this.updButton.UseVisualStyleBackColor = true;
+            this.updButton.Click += new System.EventHandler(this.updButton_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1207, 507);
+            this.Controls.Add(this.updButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.SaveChangesButton);
             this.Controls.Add(this.MenuPanel);
@@ -240,7 +248,7 @@
         private System.Windows.Forms.ToolStripMenuItem аккаунтToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem данныеПрофиляToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem сменитьПользователяToolStripMenuItem;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.Button updButton;
     }
 }
 

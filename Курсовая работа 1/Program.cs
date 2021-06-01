@@ -24,9 +24,9 @@ namespace Курсовая_работа_1
                 log.Show();
             }
 
-            Session session = null;
-            //Session session = new Session(IPAddress.Parse("127.0.0.1"), 14777);
-            //session.Open();
+            //Session session = null;
+            Session session = new Session(IPAddress.Parse("127.0.0.1"), 14777);
+            session.Open();
 
             LoginForm login = new LoginForm(session);
             login.ShowDialog();
