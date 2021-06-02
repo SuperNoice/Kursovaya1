@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Курсовая_работа_1
 {
-    public partial class logWindow : Form
+    public partial class LogForm : Form
     {
-        public logWindow()
+        public LogForm()
         {
             InitializeComponent();
             logTextBox.Text += '\n';
@@ -26,7 +19,7 @@ namespace Курсовая_работа_1
 
         public static void Print(string msg)
         {
-            logTextBox.Text += $"[{DateTime.Now.ToString()}] {msg}\n";
+            logTextBox.Text += $"[{DateTime.Now}] {msg}\n";
         }
     }
 }

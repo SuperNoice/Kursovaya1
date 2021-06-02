@@ -1,29 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
+using Newtonsoft.Json;
 
 namespace Курсовая_работа_1
 {
-    //class Menu
-    //{
-    //}
-
     struct Pair<T1, T2>
     {
         public T1 Command { set; get; }
         public T2 Row { set; get; }
     }
-
-    struct Triple<T1, T2, T3>
-    {
-        public T1 Command { set; get; }
-        public T2 RowInd { set; get; }
-        public T3 Row { set; get; }
-    }
-
 
     class MenuData
     {
@@ -34,9 +20,9 @@ namespace Курсовая_работа_1
         public DataTable CashedTable { get; set; }
         public List<DataTable> additionalColumns { get; set; }
 
-        private List<ClassLib.Message> messages;
+        private List<string> messages;
         private List<Pair<string, DataRow>> ChangesRowsStek;
-        private DataTable TmpTable { get; set; }
+        private DataTable TmpTable;
 
         public MenuData(string _name)
         {
@@ -48,7 +34,6 @@ namespace Курсовая_работа_1
             IsLoaded = false;
             MenuName = _name;
         }
-
 
         public void addChangedRow(string ChangeType, DataRow row)
         {
@@ -79,9 +64,9 @@ namespace Курсовая_работа_1
             }
         }
 
-        public ClassLib.Message[] GetMessages()
+        public string[] GetMessages()   // todo: переделать на json
         {
-            List<ClassLib.Message> _messages = new List<ClassLib.Message>();
+            List<string> _messages = new List<string>();
             string _command = "";
             DataTable sendTable = null;
 
@@ -91,7 +76,7 @@ namespace Курсовая_работа_1
                 {
                     sendTable = ActualTable.Clone();
                     _command = item.Command;
-                    _messages.Add(new ClassLib.Message($"{MenuName} {_command}", sendTable));
+                    _messages.Add($"{MenuName} {_command}"); // Здесь
                 }
                 DataRow row = sendTable.NewRow();
                 row.ItemArray = item.Row.ItemArray;
@@ -119,13 +104,13 @@ namespace Курсовая_работа_1
             IsLoaded = true;
         }
 
-        public ClassLib.Message[] SaveChanges()
+        public string[] SaveChanges()
         {
             CashedTable = ActualTable.Copy();
-            ClassLib.Message[] _messages = GetMessages();
+            string[] _messages = GetMessages();
 
-            foreach (ClassLib.Message _message in _messages)
-                Log.Print($"[{DateTime.Now}] Отправлена команда: {_message.Text}; {_message.Table.Rows.Count} строк");
+            foreach (string _message in _messages)
+                Log.Print($"[{DateTime.Now}] Отправлена команда: {_message}");
 
             ChangesRowsStek.Clear();
             TmpTable.Rows.Clear();

@@ -1,23 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Курсовая_работа_1
 {
     public partial class LoginForm : Form
     {
-        private Session Server_Session;
         private bool IsLogin = false;
 
-        public LoginForm(Session session)
+        public LoginForm()
         {
-            Server_Session = session;
             InitializeComponent();
         }
 
@@ -57,7 +48,7 @@ namespace Курсовая_работа_1
 
             IsLogin = true;
             UserInfo.UserRole = Role.Admin;
-            
+
             if (IsLogin)
                 this.Close();
         }

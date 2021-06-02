@@ -1,6 +1,6 @@
 ﻿namespace Курсовая_работа_1
 {
-    partial class logWindow
+    partial class LogForm
     {
         /// <summary>
         /// Required designer variable.
@@ -44,7 +44,8 @@
             this.logTextBox.ReadOnly = true;
             this.logTextBox.Size = new System.Drawing.Size(916, 433);
             this.logTextBox.TabIndex = 0;
-            this.logTextBox.Text = "====================LOG BEGIN====================";
+            this.logTextBox.Text = "============================================================LOG BEGIN============" +
+    "================================================";
             // 
             // logWindow
             // 

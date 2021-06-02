@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Data;
 using System.Net;
-using System.Threading;
+using System.Net.Sockets;
+using System.Text;
+using System.Windows.Forms;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Курсовая_работа_1
 {
     static class Program
     {
         static bool DebugMode = true;
-        
+
         [STAThread]
         static void Main()
         {
@@ -20,19 +22,15 @@ namespace Курсовая_работа_1
 
             if (DebugMode)
             {
-                logWindow log = new logWindow();
+                LogForm log = new LogForm();
                 log.Show();
             }
 
-            //Session session = null;
-            Session session = new Session(IPAddress.Parse("127.0.0.1"), 14777);
-            session.Open();
-
-            LoginForm login = new LoginForm(session);
+            LoginForm login = new LoginForm();
             login.ShowDialog();
 
             if (UserInfo.UserRole != Role.None)
-                Application.Run(new MainForm(session));
+                Application.Run(new MainForm());
 
         }
     }
