@@ -22,14 +22,14 @@ namespace Курсовая_работа_1
         public MainForm()
         {
             _menuData = new Dictionary<string, MenuData>();
-            _menuData.Add("users", new MenuData("users"));
-            _menuData.Add("admins", new MenuData("admins"));
-            _menuData.Add("directions", new MenuData("directions"));
-            _menuData.Add("groups", new MenuData("groups"));
-            _menuData.Add("teachers", new MenuData("teachers"));
-            _menuData.Add("subjects", new MenuData("subjects"));
-            _menuData.Add("students", new MenuData("students"));
-            _menuData.Add("semsubject", new MenuData("semsubject"));
+            _menuData.Add("users", new MenuData("user"));
+            _menuData.Add("admins", new MenuData("user"));
+            _menuData.Add("directions", new MenuData("direction"));
+            _menuData.Add("groups", new MenuData("group"));
+            _menuData.Add("teachers", new MenuData("teacher"));
+            _menuData.Add("subjects", new MenuData("subject"));
+            _menuData.Add("students", new MenuData("student"));
+            _menuData.Add("semsubject", new MenuData("semestr_subject"));
 
             _messagesStek = new List<string[]>();
             _menuButtonsList = new List<Button>();
@@ -78,46 +78,6 @@ namespace Курсовая_работа_1
             }
         }
 
-        private void AddButton_Click(object sender, EventArgs e)
-        {
-            _filling = true;
-            DataRow _row = _menuData[_menuName].ActualTable.Rows.Add();
-            _menuData[_menuName].addChangedRow("add", _row);
-
-            SaveChangesButton.Enabled = !_menuData[_menuName].Saved;
-            _filling = false;
-        }
-
-        private void DelButton_Click(object sender, EventArgs e)
-        {
-            _filling = true;
-            foreach (DataGridViewRow row in dataGridViewMain.SelectedRows)
-            {
-                _menuData[_menuName].addChangedRow("del", _menuData[_menuName].ActualTable.Rows[row.Index]);
-                _menuData[_menuName].ActualTable.Rows.RemoveAt(row.Index);
-            }
-
-            SaveChangesButton.Enabled = !_menuData[_menuName].Saved;
-            _filling = false;
-        }
-
-        private void SaveChangesButton_Click(object sender, EventArgs e)
-        {
-            _messagesStek.Add(_menuData[_menuName].SaveChanges());
-            //string[] answers = Session.GetSession().Send_Recieve(_messagesStek.Last<string[]>());
-            _messagesStek.Remove(_messagesStek.Last<string[]>());
-
-            SaveChangesButton.Enabled = !_menuData[_menuName].Saved;
-            updButton.Enabled = true;
-        }
-
-        private void updButton_Click(object sender, EventArgs e)
-        {
-            _menuData[_menuName].IsLoaded = false;
-            _lastPressedButton.PerformClick();
-            updButton.Enabled = false;
-        }
-
         private void ChangeButtonColor(object sender, EventArgs e)
         {
             if (_lastPressedButton != null)
@@ -164,7 +124,10 @@ namespace Курсовая_работа_1
                 foreach (DataRow row in table.Rows)
                     values.Add(row.ItemArray[1]);
 
-                column.Name = columnNamesForReplaceByAdditionals[ptr].Replace("id", "List");
+                if (columnNamesForReplaceByAdditionals[ptr].Contains("id"))
+                    column.Name = columnNamesForReplaceByAdditionals[ptr].Replace("id", "List");
+                else
+                    column.Name = columnNamesForReplaceByAdditionals[ptr]+"List";
                 column.Items.AddRange(values.ToArray());
 
                 dataGridViewMain.Columns.Insert(0, column);
@@ -173,7 +136,18 @@ namespace Курсовая_работа_1
 
             for (ptr = 0; ptr < columnNamesForReplaceByAdditionals.Count<string>(); ++ptr)
                 foreach (DataGridViewRow row in dataGridViewMain.Rows)
-                    row.Cells[columnNamesForReplaceByAdditionals[ptr].Replace("id", "List")].Value = _menuData[_menuName].additionalColumns[ptr].Select($"id='{row.Cells[columnNamesForReplaceByAdditionals[ptr]].Value}'")[0].ItemArray[1];
+                {
+                    var a = _menuData[_menuName].additionalColumns[ptr];
+                    if (a.TableName.Contains("id"))
+                    {
+                        var b = a.Select($"id='{row.Cells[columnNamesForReplaceByAdditionals[ptr]].Value}'");
+                        row.Cells[columnNamesForReplaceByAdditionals[ptr].Replace("id", "List")].Value = b[0].ItemArray[1];
+                    }
+                    else
+                    {
+                        row.Cells[columnNamesForReplaceByAdditionals[ptr]+"List"].Value = row.Cells[columnNamesForReplaceByAdditionals[ptr]].Value;
+                    }
+                }
 
 
             foreach (string item in columnNamesForReplaceByAdditionals)
@@ -222,7 +196,7 @@ namespace Курсовая_работа_1
         {
             _menuName = "teachers";
             DataTable _table = Session.GetSession().Send_Recieve("SELECT * FROM `teacher`");
-            DataTable _tableUsers = Session.GetSession().Send_Recieve("SELECT id, login FROM `user`");
+            DataTable _tableUsers = Session.GetSession().Send_Recieve("SELECT id, login FROM `user` WHERE role_id = (SELECT id FROM `role` WHERE name = 'teacher')");
             string[] columnNames = new string[] { "user_id" };
             SetTable(_table, columnNames, new DataTable[] { _tableUsers });
         }
@@ -242,7 +216,7 @@ namespace Курсовая_работа_1
             _menuName = "students";
             DataTable _table = Session.GetSession().Send_Recieve("SELECT * FROM `student`");
             DataTable _tableGroups = Session.GetSession().Send_Recieve("SELECT id, code FROM `group`");
-            DataTable _tableUsers = Session.GetSession().Send_Recieve("SELECT id, login FROM `user`");
+            DataTable _tableUsers = Session.GetSession().Send_Recieve("SELECT id, login FROM `user` WHERE role_id = (SELECT id FROM `role` WHERE name = 'student')");
             string[] columnNames = new string[] { "group_id", "user_id" };
             SetTable(_table, columnNames, new DataTable[] { _tableGroups, _tableUsers });
         }
@@ -284,6 +258,46 @@ namespace Курсовая_работа_1
         }
 
         // DataGridView события изменения строк
+        private void AddButton_Click(object sender, EventArgs e)
+        {
+            _filling = true;
+            DataRow _row = _menuData[_menuName].ActualTable.Rows.Add();
+            _menuData[_menuName].addChangedRow("add", _row);
+
+            SaveChangesButton.Enabled = !_menuData[_menuName].Saved;
+            _filling = false;
+        }
+
+        private void DelButton_Click(object sender, EventArgs e)
+        {
+            _filling = true;
+            foreach (DataGridViewRow row in dataGridViewMain.SelectedRows)
+            {
+                _menuData[_menuName].addChangedRow("del", _menuData[_menuName].ActualTable.Rows[row.Index]);
+                _menuData[_menuName].ActualTable.Rows.RemoveAt(row.Index);
+            }
+
+            SaveChangesButton.Enabled = !_menuData[_menuName].Saved;
+            _filling = false;
+        }
+
+        private void SaveChangesButton_Click(object sender, EventArgs e)
+        {
+            _messagesStek.Add(_menuData[_menuName].SaveChanges());
+            DataTable[] answers = Session.GetSession().Send_Recieve(_messagesStek.Last<string[]>());
+            _messagesStek.Remove(_messagesStek.Last<string[]>());
+
+            SaveChangesButton.Enabled = !_menuData[_menuName].Saved;
+            updButton.Enabled = true;
+        }
+
+        private void updButton_Click(object sender, EventArgs e)
+        {
+            _menuData[_menuName].IsLoaded = false;
+            _lastPressedButton.PerformClick();
+            updButton.Enabled = false;
+        }
+
         private void dataGridViewMain_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
 
@@ -298,9 +312,10 @@ namespace Курсовая_работа_1
         {
             if (!_filling)
             {
-                if (dataGridViewMain.Columns[e.ColumnIndex].Name.Contains("Comb"))
+                // Синхронизация значений ячеек в списке и исходной таблице
+                if (dataGridViewMain.Columns[e.ColumnIndex].Name.Contains("_List"))
                 {
-                    string colname = dataGridViewMain.Columns[e.ColumnIndex].Name.Replace("Comb", "");
+                    string colname = dataGridViewMain.Columns[e.ColumnIndex].Name.Replace("List", "id");
                     DataTable additional = null;
                     foreach (DataTable _table in _menuData[_menuName].additionalColumns)
                         if (_table.TableName == colname)
@@ -308,6 +323,15 @@ namespace Курсовая_работа_1
 
                     dataGridViewMain[colname, e.RowIndex].Value = additional.Select($"val = '{dataGridViewMain[e.ColumnIndex, e.RowIndex].Value}'")[0].ItemArray[0];
                 }
+                else
+                {
+                    if(dataGridViewMain.Columns[e.ColumnIndex].Name.Contains("List"))
+                    {
+                        string colname = dataGridViewMain.Columns[e.ColumnIndex].Name.Replace("List", "");
+                        dataGridViewMain[colname, e.RowIndex].Value = dataGridViewMain[colname+"List", e.RowIndex].Value;
+                    }
+                }
+
 
                 Log.Print($"RowIndex={e.RowIndex}; NewValue={dataGridViewMain[e.ColumnIndex, e.RowIndex].Value}");
 

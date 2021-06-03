@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace Курсовая_работа_1
@@ -64,7 +65,43 @@ namespace Курсовая_работа_1
             }
         }
 
-        public string[] GetMessages()   // todo: переделать на json
+        private string prepareToInsert(DataRow row)
+        {
+            StringBuilder resultBuilder = new StringBuilder();
+            object[] vals = new object[row.ItemArray.Length];
+            row.ItemArray.CopyTo(vals, 0);
+            vals[0] = null;
+
+            foreach (var item in vals)
+            {
+                if (item == null || item.ToString() == "")
+                    resultBuilder.Append($"NULL, ");
+                else
+                    resultBuilder.Append($"'{item}', ");
+            }
+
+            return resultBuilder.ToString().Trim(',', ' ');
+        }
+
+        private string prepareToUpdate(DataRow row)
+        {
+            List<string> columnNames = new List<string>();
+            foreach (DataColumn column in row.Table.Columns)
+                columnNames.Add(column.ColumnName);
+
+            StringBuilder resultBuilder = new StringBuilder();
+
+            for (int i = 0; i < columnNames.Count; ++i)
+            {
+                if (columnNames[i] == "id")
+                    continue;
+                resultBuilder.Append($"`{MenuName}`.{columnNames[i]} = '{row.ItemArray[i]}', ");
+            }
+
+            return resultBuilder.ToString().Trim(',', ' ');
+        }
+
+        public string[] GetMessages()
         {
             List<string> _messages = new List<string>();
             string _command = "";
@@ -72,12 +109,30 @@ namespace Курсовая_работа_1
 
             foreach (Pair<string, DataRow> item in ChangesRowsStek)
             {
-                if (item.Command != _command)
+                
+                sendTable = ActualTable.Clone();
+                    
+
+                string msg = "";
+                switch (item.Command)
                 {
-                    sendTable = ActualTable.Clone();
-                    _command = item.Command;
-                    _messages.Add($"{MenuName} {_command}"); // Здесь
+                    case "add":
+                        msg = $"INSERT INTO `{MenuName}` VALUES ({prepareToInsert(item.Row)})";
+
+                        break;
+                    case "del":
+                        msg = $"DELETE FROM `{MenuName}` WHERE id = {item.Row.ItemArray[0]}";
+
+                        break;
+                    case "upd":
+                        msg = $"UPDATE `{MenuName}` SET {prepareToUpdate(item.Row)} WHERE id = {item.Row.ItemArray[0]}";
+
+                        break;
+                    default:
+                        break;
                 }
+                _messages.Add(msg);
+                
                 DataRow row = sendTable.NewRow();
                 row.ItemArray = item.Row.ItemArray;
                 sendTable.Rows.Add(row);

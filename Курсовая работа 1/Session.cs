@@ -130,16 +130,16 @@ namespace Курсовая_работа_1
             return table;
         }
 
-        //public DataTable[] Send_Recieve(string[] msgArray)
-        //{
-        //    List<DataTable> messages = new List<DataTable>();
+        public DataTable[] Send_Recieve(string[] msgArray)
+        {
+            List<DataTable> messages = new List<DataTable>();
 
-        //    foreach (string msg in msgArray)
-        //    {
-        //        messages.Add(Send_Recieve(msg));
-        //    }
-        //    return messages.ToArray();
-        //}
+            foreach (string msg in msgArray)
+            {
+                messages.Add(Send_Recieve(msg));
+            }
+            return messages.ToArray();
+        }
 
         public void Open()
         {
